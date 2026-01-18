@@ -5,6 +5,7 @@ Git repository
 mkdir ml
 cd ml
 sudo apt install python3-venv
+python3 -m venv myvenv
 source myvenv/bin/activate
 
 gedit requirements.txt:
