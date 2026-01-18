@@ -1,0 +1,39 @@
+To design and deploy a multi-container application using Docker Compose by creating an application service and a dependent database/Redis service, configuring service dependencies, networks,
+and volumes, and verifying inter-container communication.
+
+
+sudo apt install docker-compose docker.io -y
+sudo systemctl daemon-reload
+sudo systemctl start docker
+
+gedit app.py:
+import redis
+result=redis.Redis(host="redis",port=6379)
+result.incr("count")
+print("count",result.get("count").decode())
+
+
+gedit Dockerfile:
+FROM python:3.10
+WORKDIR /app
+RUN pip install redis
+COPY app.py /app/app.py
+CMD ["python", "app.py"]
+
+
+gedit docker-compose.yml:
+version: "3.9"
+services:
+  app:
+    build: .
+    depends_on:
+      - redis
+  redis:
+    image: redis
+    volumes:
+      - redis-data:/data
+volumes:
+  redis-data:
+
+docker-compose up --build
+
