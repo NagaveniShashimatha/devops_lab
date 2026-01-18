@@ -1,0 +1,35 @@
+To perform experiment tracking using MLflow by training a machine learning model, logging metrics, parameters, and artifacts, and comparing multiple runs to identify the best-performing model.
+
+
+mkdir q8
+cd q8
+
+pip install mlflow
+
+gedit q8:
+from sklearn.datasets import load_iris
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import mlflow
+import mlflow.sklearn
+
+X, y = load_iris(return_X_y=True)
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+for c in [0.01, 0.1, 1.0]:
+    with mlflow.start_run():
+        model = LogisticRegression(C=c, max_iter=200)
+        model.fit(X_train, y_train)
+
+        y_pred = model.predict(X_test)
+        acc_score = accuracy_score(y_test, y_pred)
+
+        mlflow.log_param("C", c)
+        mlflow.log_metric("accuracy", acc_score)
+        mlflow.sklearn.log_model(model, "model")
+
+python3 q8.py
+mlflow ui
