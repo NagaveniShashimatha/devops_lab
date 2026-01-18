@@ -1,0 +1,49 @@
+Deploy the previously created Docker image on Kubernetes using a Deployment YAML file. Verify
+that the pod is running using kubectl commands. Expose the application using a NodePort Service,
+access it using the node’s IP and port, and scale the deployment to 3 replicas using kubectl scale.
+
+
+mkdir mlo
+cd mlo
+gedit html.html:
+<h1> hello from docker </h1>
+
+gedit Dockerfile:
+FROM nginx:latest
+COPY html.html /usr/source/nginx/html
+
+docker build -t app:1.0 .
+
+minikube start --driver=docker
+
+gedit app.yaml:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: html-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: html-app
+  template:
+    metadata:
+      labels:
+        app: html-app
+    spec:
+      containers:
+      - name: html-container
+        image: app:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+
+minikube image load app:1.0
+kubectl apply -f app.yaml
+kubectl get pods
+kubectl get deployments
+kubectl expose deployment html-app-deployment --type=NodePort --port=80
+                    or
+kubectl port-forward svc/html-app-deployment 8082:80
+
+
