@@ -1,0 +1,40 @@
+To optimize and standardize model inference using ONNX by exporting a trained ML model to
+ONNX format, running inference with ONNX Runtime, and benchmarking performance against
+the native scikit-learn model
+
+python3 -m venv venv
+source venv/bin/activate
+
+mkdir onnx
+cd onnx
+
+ pip install numpy scikit-learn skl2onnx onnxruntime
+
+gedit q9.py:
+
+
+import numpy as np
+import time
+from sklearn.linear_model import LinearRegression
+from skl2onnx import to_onnx
+import onnxruntime as ort
+X = np.random.rand(1000, 1).astype(np.float32)
+y = 3 * X + 5
+model = LinearRegression()
+model.fit(X, y)
+onnx_model = to_onnx(model, X)
+with open("model.onnx", "wb") as f:
+    f.write(onnx_model.SerializeToString())
+sess = ort.InferenceSession("model.onnx", providers=["CPUExecutionProvider"])
+input_name = sess.get_inputs()[0].name
+t0 = time.time()
+for _ in range(10000):
+    model.predict(X)
+sk_time = time.time() - t0
+t0 = time.time()
+for _ in range(10000):
+    sess.run(None, {input_name: X})
+onnx_time = time.time() - t0
+print("Scikit-learn time:", sk_time)
+print("ONNX Runtime time:", onnx_time)
+
