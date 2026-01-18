@@ -1,0 +1,33 @@
+Set up a simple ML project environment by creating a requirements.txt file, installing packages,
+and verifying environment setup. Document the steps in a Jupyter Notebook and commit it to the
+Git repository
+
+mkdir ml
+cd ml
+sudo apt install python3-venv
+source myvenv/bin/activate
+
+gedit requirements.txt:
+numpy>=1.22
+pandas>=1.5
+jupyterlab>=4.1
+notebook>=6.5
+ipykernel
+
+pip install -r requirements.txt
+
+jupyter lab
+
+test.ipynb:
+import numpy as np
+import pandas as pd
+print(np.__version__)
+print(pd.__version__)
+
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+#if needed only git remote set-url origin https://github.com/harshini2004-tech/nnnnn.git
+git remote add origin https://github.com/harshini2004-tech/nnnnn.git
+git push -u origin main
